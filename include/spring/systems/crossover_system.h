@@ -17,7 +17,6 @@ class CrossoverSystem : public ISystem {
 
   State& state_;
   Configuration& config_;
-  int n_ = 0;
 
  public:
   CrossoverSystem(EntityManager* entity_manager, SystemManager* system_manager, const State& state,

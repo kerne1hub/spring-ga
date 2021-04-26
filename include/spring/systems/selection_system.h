@@ -12,7 +12,6 @@ class SelectionSystem : public ISystem {
  private:
   State& state_;
   Configuration& config_;
-  int n_ = 0;
 
  public:
   SelectionSystem(EntityManager* entity_manager, SystemManager* system_manager, const State& state,

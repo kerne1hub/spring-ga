@@ -15,8 +15,10 @@ AnalysisSystem::AnalysisSystem(EntityManager* entity_manager, SystemManager* sys
       state_(const_cast<State&>(state)),
       config_(const_cast<Configuration&>(config)) {}
 
+void AnalysisSystem::OnPreUpdate() {}
+
 void AnalysisSystem::OnUpdate() {
-  if (state_.GetGenerationNumber() > generation_) {
+  if (state_.stage == ANALYSIS) {
     auto actors = state_.GetActors();
     auto size = actors.size();
     size_t id = -1;
@@ -24,7 +26,6 @@ void AnalysisSystem::OnUpdate() {
     double avg = 0;
 
     for (auto actor : actors) {
-      actor->Add<FitnessComponent>(-1);
       double fitness = DetermineFitness(actor);
 
       avg += fitness;
@@ -35,11 +36,15 @@ void AnalysisSystem::OnUpdate() {
       }
     }
 
-    avg /= size;
+    avg /= static_cast<int>(size);
 
     state_.SetAverageFitness(avg);
     state_.SetSolutionId(id);
-    generation_++;
+    state_.stage = SELECTION;
+
+    if (state_.GetGenerationNumber() >= state_.GetGenerationLimit()) {
+      state_.stage = SHUTDOWN;
+    }
   }
 }
 
@@ -80,9 +85,10 @@ double AnalysisSystem::DetermineFi1Diapason(double t3) {
 }
 
 double AnalysisSystem::DetermineFi2Diapason(double d, double n) {
-  return config_.GetH() * 1000 + d * (n + 2) - config_.GetH() * 1000;
+  return config_.GetH3() * 1000 + d * (n + 2) - config_.GetH() * 1000;
 }
 
 double AnalysisSystem::DetermineFi4Diapason(double n) {
   return 3 - n;
 }
+void AnalysisSystem::OnPostUpdate() {}

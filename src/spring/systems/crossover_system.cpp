@@ -19,14 +19,14 @@ CrossoverSystem::CrossoverSystem(EntityManager* entity_manager, SystemManager* s
 }
 
 void CrossoverSystem::OnUpdate() {
-  if (state_.GetGenerationNumber() > n_) {
+  if (state_.stage == CROSSOVER) {
     std::uniform_real_distribution<double> dist(0.0, 1.0);
     std::uniform_real_distribution<double> indexRand(0, state_.GetActors().size() - 1);
 
     for (int i = 0; i < 2; i++) {
       std::unordered_set<int> indexes;
 
-      while (static_cast<int>(indexes.size()) < config_.GetPc() * state_.GetActors().size()) {
+      while (indexes.size() < (state_.GetActors().size() - state_.GetSurvivors().size())) {
         indexes.insert(static_cast<int>(indexRand(gen_)));
       }
 
@@ -39,21 +39,25 @@ void CrossoverSystem::OnUpdate() {
           isParentInSearch = true;
         } else {
           if (dist(gen_) > 0.5) {
-            auto entity = GetEntityManager().CreateEntity()->Add<CharacteristicsComponent>(
+            auto entity = GetEntityManager().CreateEntity()->
+                          Add<CharacteristicsComponent>(
                 state_.GetActors()[index]->Get<CharacteristicsComponent>()->d_,
                 state_.GetActors()[freeParent]->Get<CharacteristicsComponent>()->D_,
                 config_.GetF2(),
                 config_.GetG(),
-                config_.GetH());
+                config_.GetH3())->
+                          Add<FitnessComponent>(-1);
 
             state_.AddDescendant(entity);
           } else {
-            auto entity = GetEntityManager().CreateEntity()->Add<CharacteristicsComponent>(
+            auto entity = GetEntityManager().CreateEntity()->
+                          Add<CharacteristicsComponent>(
                 state_.GetActors()[freeParent]->Get<CharacteristicsComponent>()->d_,
                 state_.GetActors()[index]->Get<CharacteristicsComponent>()->D_,
                 config_.GetF2(),
                 config_.GetG(),
-                config_.GetH());
+                config_.GetH3())->
+                          Add<FitnessComponent>(-1);
 
             state_.AddDescendant(entity);
           }
@@ -61,6 +65,6 @@ void CrossoverSystem::OnUpdate() {
         }
       }
     }
-    n_++;
+    state_.stage = MUTATION;
   }
 }

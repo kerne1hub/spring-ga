@@ -11,11 +11,11 @@
 
 class CharacteristicsComponent : public IComponent {
  public:
-  double d_;
-  double D_;
-  double m_;
-  double n_;
-  double t3_;
+  double d_{};
+  double D_{};
+  double m_{};
+  double n_{};
+  double t3_{};
 
   CharacteristicsComponent() = default;
 
@@ -23,8 +23,8 @@ class CharacteristicsComponent : public IComponent {
     m_ = D / d;
     double F3 = F2 / 0.75;
     t3_ = (((4 * m_) - 1) / (4 * m_ - 4) + (0.615 / m_)) * ((8 * F3 * D) / (3.14159 * pow(d, 3)));
-    double c = F2 / (h * 1000);
-    n_ = std::round(((G * pow(d, 4)) / (8 * pow(D, 3) * c)));
+    double c = F2 / h;
+    n_ = std::round(((G * pow(d, 4)) / (8 * pow(D, 3) * c)) * 1000);
   }
 };
 

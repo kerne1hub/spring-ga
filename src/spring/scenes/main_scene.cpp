@@ -6,6 +6,7 @@
 #include <spring/scenes/main_scene.h>
 #include <spring/systems/analysis_system.h>
 #include <spring/systems/crossover_system.h>
+#include <spring/systems/formation_system.h>
 #include <spring/systems/generation_system.h>
 #include <spring/systems/mutation_system.h>
 #include <spring/systems/rendering_system.h>
@@ -15,6 +16,8 @@ MainScene::MainScene(Context *ctx, const Controls &controls) : IScene(ctx), cont
 
 void MainScene::OnCreate() {
   config_ = std::make_unique<Configuration>(ctx_->Get<Configuration>("config"));
+  auto population = 100;
+  state.SetGenerationLimit(population);
 
   pages_.emplace_back(56, 1, 40, 22, " Результаты ");
 
@@ -25,6 +28,7 @@ void MainScene::OnCreate() {
   sys->AddSystem<SelectionSystem>(state, *config_);
   sys->AddSystem<CrossoverSystem>(state, *config_);
   sys->AddSystem<MutationSystem>(state, *config_);
+  sys->AddSystem<FormationSystem>(state, *config_);
   sys->AddSystem<RenderingSystem>(state, &pages_);
 }
 

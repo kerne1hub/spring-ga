@@ -12,14 +12,15 @@ class AnalysisSystem : public ISystem {
  private:
   State& state_;
   Configuration& config_;
-  int generation_ = 0;
 
  public:
   AnalysisSystem(EntityManager* entity_manager, SystemManager* system_manager, const State& state,
   const Configuration& config);
 
  protected:
+  void OnPreUpdate() override;
   void OnUpdate() override;
+  void OnPostUpdate() override;
   double DetermineFi1Diapason(double t3);
   double DetermineFi2Diapason(double d, double n);
   double DetermineFi4Diapason(double n);

@@ -7,8 +7,10 @@
 
 #include <lib/ecs/entity.h>
 #include <spring/components/fitness_component.h>
+#include <spring/stage.h>
 
 #include <algorithm>
+#include <random>
 #include <vector>
 
 class State {
@@ -16,8 +18,11 @@ class State {
   std::vector<Entity*> survivors_;
   std::vector<Entity*> descendants_;
   int generation_ = 0;
+  int generationLimit_{};
   size_t solutionId_ = -1;
   double averageFitness_ = -1;
+
+  std::random_device rd_;
 
  private:
   double range_d[48] = {0.16, 0.18, 0.2,  0.22, 0.25, 0.28, 0.3,  0.32,  // ГОСТ-3282-74, мм
@@ -26,6 +31,8 @@ class State {
                         3.8,  4,    4.5,  5,    5.5,  5.6,  6,    6.3,  7,   8,    9,   10};
 
  public:
+  int stage = GENERATION;
+
   explicit State() = default;
 
   const double* GetRangeD() const {
@@ -62,6 +69,7 @@ class State {
 
   void ClearActors() {
     actors_.clear();
+    solutionId_ = -1;
   }
 
   void ClearSurvivors() {
@@ -103,8 +111,34 @@ class State {
   }
 
   void SelectSurvivors(double Pc) {
-    auto last = actors_.begin() + actors_.size() * (1 - Pc);
+    auto last = actors_.begin() + std::round(actors_.size() * (1 - Pc));
     survivors_.insert(survivors_.begin(), actors_.begin(), last);
+  }
+
+  void ExtractSurvivors(double Pc) {
+    auto last = actors_.begin() + std::round(actors_.size() * (1 - Pc));
+    actors_.erase(actors_.begin(), last);
+  }
+
+  void AddSurvivors() {
+    actors_.insert(actors_.begin(), survivors_.begin(), survivors_.end());
+  }
+
+  void AddDescendants() {
+    actors_.insert(actors_.end(), descendants_.begin(), descendants_.end());
+  }
+
+  void ShuffleActors() {
+    auto rng = std::default_random_engine{rd_()};
+    std::shuffle(actors_.begin(), actors_.end(), rng);
+  }
+
+  int GetGenerationLimit() const {
+    return generationLimit_;
+  }
+
+  void SetGenerationLimit(int generationLimit) {
+    generationLimit_ = generationLimit;
   }
 };
 

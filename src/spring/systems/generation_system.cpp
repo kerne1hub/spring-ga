@@ -17,18 +17,21 @@ GenerationSystem::GenerationSystem(EntityManager* entity_manager, SystemManager*
 }
 
 void GenerationSystem::OnUpdate() {
-  if (static_cast<int>(state_.GetActors().size()) < n_) {
+  if (state_.stage == GENERATION) {
     auto minD = config_.GetMinD();
     auto maxD = config_.GetMaxD();
     std::uniform_real_distribution<double> distA(minD, maxD);
     std::uniform_real_distribution<double> distB(0.0, 48.0);
 
     while (static_cast<int>(state_.GetActors().size()) < n_) {
-      auto entity = GetEntityManager().CreateEntity()->Add<CharacteristicsComponent>(
+      auto entity = GetEntityManager().CreateEntity()->
+                    Add<CharacteristicsComponent>(
           state_.GetRangeD()[static_cast<int>(distB(gen_))], distA(gen_), config_.GetF2(), config_.GetG(),
-          config_.GetH());
+          config_.GetH3())->
+                    Add<FitnessComponent>(-1);;
       state_.AddActor(entity);
     }
-    state_.IncGeneration();
+
+    state_.stage = ANALYSIS;
   }
 }

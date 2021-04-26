@@ -14,9 +14,10 @@ SelectionSystem::SelectionSystem(EntityManager* entity_manager, SystemManager* s
       config_(const_cast<Configuration&>(config)) {}
 
 void SelectionSystem::OnUpdate() {
-  if (state_.GetGenerationNumber() > n_) {
+  if (state_.stage == SELECTION) {
     state_.SortActors();
     state_.SelectSurvivors(config_.GetPc());
-    n_++;
+
+    state_.stage = CROSSOVER;
   }
 }

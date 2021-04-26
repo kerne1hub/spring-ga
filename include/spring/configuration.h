@@ -13,6 +13,7 @@ class Configuration {
   int G;                              // Модуль сдвига (Н/мм2)
   int minD_;
   int maxD_;
+  double h_ = 0.01;
 
   double Pc_;
   double Pm_;
@@ -51,6 +52,10 @@ class Configuration {
 
   double GetPm() const {
     return Pm_;
+  }
+
+  double GetH3() const {
+    return h_;
   }
 };
 
