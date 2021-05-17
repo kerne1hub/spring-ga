@@ -5,11 +5,13 @@
 #ifndef INCLUDE_SPRING_STATE_H_
 #define INCLUDE_SPRING_STATE_H_
 
+#include <BearLibTerminal.h>
 #include <lib/ecs/entity.h>
 #include <spring/components/fitness_component.h>
 #include <spring/stage.h>
 
 #include <algorithm>
+#include <cmath>
 #include <random>
 #include <vector>
 
@@ -17,9 +19,13 @@ class State {
   std::vector<Entity*> actors_;
   std::vector<Entity*> survivors_;
   std::vector<Entity*> descendants_;
+
+  std::vector<color_t> fitnessGraph_;
+
   int generation_ = 0;
   int generationLimit_{};
   size_t solutionId_ = -1;
+  double bestFitness_ = -1;
   double averageFitness_ = -1;
 
   std::random_device rd_;
@@ -110,6 +116,14 @@ class State {
     return averageFitness_;
   }
 
+  double GetBestFitness() const {
+    return bestFitness_;
+  }
+
+  void SetBestFitness(double bestFitness) {
+    bestFitness_ = bestFitness;
+  }
+
   void SelectSurvivors(double Pc) {
     auto last = actors_.begin() + std::round(actors_.size() * (1 - Pc));
     survivors_.insert(survivors_.begin(), actors_.begin(), last);
@@ -139,6 +153,23 @@ class State {
 
   void SetGenerationLimit(int generationLimit) {
     generationLimit_ = generationLimit;
+  }
+
+  void ClearFitnessGraph() {
+    fitnessGraph_.clear();
+    fitnessGraph_.resize(10000, 0);
+  }
+
+  void AddFitnessPoint(int n, int value, color_t color) {
+    int offset = abs(value - 99) * 100 + n;
+
+    if (offset < 10000 && offset >= 0) {
+      fitnessGraph_[offset] = color;
+    }
+  }
+
+  const std::vector<color_t>& GetFitnessGraph() const {
+    return fitnessGraph_;
   }
 };
 

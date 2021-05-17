@@ -36,9 +36,13 @@ void MutationSystem::OnUpdate() {
 
     for (int index : indexes) {
       if (distA(gen_) > 0.5) {
+        int currentIndex = state_.GetDescendants()[index]->Get<CharacteristicsComponent>()->d_index_;
+        int newIndex = SoftMutate(0, 47, currentIndex);
+
         auto entity = GetEntityManager().CreateEntity()->
                       Add<CharacteristicsComponent>(
-            state_.GetRangeD()[static_cast<int>(distB(gen_))],
+            newIndex,
+            state_.GetRangeD()[newIndex],
             state_.GetDescendants()[index]->Get<CharacteristicsComponent>()->D_, config_.GetF2(), config_.GetG(),
             config_.GetH3())->
                       Add<FitnessComponent>(-1);;
@@ -48,8 +52,9 @@ void MutationSystem::OnUpdate() {
       } else {
         auto entity = GetEntityManager().CreateEntity()->
                       Add<CharacteristicsComponent>(
+            state_.GetDescendants()[index]->Get<CharacteristicsComponent>()->d_index_,
             state_.GetDescendants()[index]->Get<CharacteristicsComponent>()->d_,
-            (distC(gen_) + state_.GetDescendants()[index]->Get<CharacteristicsComponent>()->D_) / 2, config_.GetF2(),
+            distC(gen_), config_.GetF2(),
             config_.GetG(), config_.GetH3())->
                       Add<FitnessComponent>(-1);;
 
@@ -59,4 +64,24 @@ void MutationSystem::OnUpdate() {
     }
     state_.stage = FORMATION;
   }
+}
+
+int MutationSystem::SoftMutate(int min, int max, int current) {
+  std::uniform_real_distribution<double> distA(0.0, 1);
+
+  if (current - 1 < min) {
+    return current + 1;
+  }
+
+  if (current + 1 > max) {
+    return current - 1;
+  }
+
+  double r = distA(gen_);
+
+  if (r > 0.5) {
+    return current + 1;
+  }
+
+  return current - 1;
 }

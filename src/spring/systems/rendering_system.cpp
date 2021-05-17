@@ -18,6 +18,11 @@ RenderingSystem::RenderingSystem(EntityManager* entity_manager, SystemManager* s
 void RenderingSystem::OnUpdate() {
   terminal_clear();
 
+  terminal_print_ext(2, 1, 11, 1, TK_ALIGN_CENTER, "fitness");
+  terminal_printf(18, 4, "best: %.2f", state_.GetBestFitness());
+  terminal_printf(18, 5, "avg: %.2f", state_.GetAverageFitness());
+  terminal_printf(18, 6, "iteration: %i", state_.GetGenerationNumber());
+
   for (auto& page : *pages_) {
     page.Draw();
   }
@@ -63,6 +68,9 @@ void RenderingSystem::OnUpdate() {
     terminal_printf(68, 11, "%.3f", fitness->fi1_);
     terminal_printf(68, 13, "%.3f", fitness->fi2_);
     terminal_printf(68, 15, "%.0f", fitness->fi4_);
+
+    terminal_setf("U+E100: %#p, raw-size=%dx%d", state_.GetFitnessGraph().data(), 100, 100);
+    terminal_put(2, 2, 0xE100);
   }
 
   terminal_refresh();

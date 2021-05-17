@@ -27,6 +27,8 @@ class MutationSystem : public ISystem {
 
  protected:
   void OnUpdate() override;
+
+  int SoftMutate(int min, int max, int current);
 };
 
 #endif  // INCLUDE_SPRING_SYSTEMS_MUTATION_SYSTEM_H_

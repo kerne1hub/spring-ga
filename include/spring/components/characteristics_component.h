@@ -11,6 +11,7 @@
 
 class CharacteristicsComponent : public IComponent {
  public:
+  int d_index_{};
   double d_{};
   double D_{};
   double m_{};
@@ -19,7 +20,8 @@ class CharacteristicsComponent : public IComponent {
 
   CharacteristicsComponent() = default;
 
-  CharacteristicsComponent(double d, double D, double F2, double G, double h) : d_(d), D_(D) {
+  CharacteristicsComponent(int d_index, double d, double D, double F2, double G, double h)
+      : d_index_(d_index), d_(d), D_(D) {
     m_ = D / d;
     double F3 = F2 / 0.75;
     t3_ = (((4 * m_) - 1) / (4 * m_ - 4) + (0.615 / m_)) * ((8 * F3 * D) / (3.14159 * pow(d, 3)));

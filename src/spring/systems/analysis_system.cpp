@@ -2,6 +2,7 @@
 // Created by kernel on 25.04.2021.
 //
 
+#include <BearLibTerminal.h>
 #include <lib/ecs/entity_manager.h>
 #include <spring/components/characteristics_component.h>
 #include <spring/components/fitness_component.h>
@@ -23,7 +24,11 @@ void AnalysisSystem::OnUpdate() {
     auto size = actors.size();
     size_t id = -1;
     double best = 10e8;
+    double worse = 0;
     double avg = 0;
+    int n = 0;
+
+    ClearFitnessPlot();
 
     for (auto actor : actors) {
       double fitness = DetermineFitness(actor);
@@ -34,12 +39,40 @@ void AnalysisSystem::OnUpdate() {
         best = fitness;
         id = actor->GetId();
       }
+
+      if (fitness > worse) {
+        worse = fitness;
+      }
+
+      n++;
     }
 
+    n = 0;
+
     avg /= static_cast<int>(size);
+    worse = avg * 2;
+
+    for (auto actor : actors) {
+      auto value = round(actor->Get<FitnessComponent>()->value_);
+      auto y = round((value / worse) * 100);
+      y = y > 99 ? 99 : y;
+      AddFitnessPlotData(n, static_cast<int>(y), 0xFF80FF80);
+      n++;
+    }
+
+    for (int x = 0; x < 100; x++) {
+      AddFitnessPlotData(x, 0, 0xFFFFFFFF);
+      AddFitnessPlotData(x, 99, 0xFFFFFFFF);
+    }
+
+    for (int y = 0; y < 100; y++) {
+      AddFitnessPlotData(0, y, 0xFFFFFFFF);
+      AddFitnessPlotData(99, y, 0xFFFFFFFF);
+    }
 
     state_.SetAverageFitness(avg);
     state_.SetSolutionId(id);
+    state_.SetBestFitness(GetEntityManager().Get(id)->Get<FitnessComponent>()->value_);
     state_.stage = SELECTION;
 
     if (state_.GetGenerationNumber() >= state_.GetGenerationLimit()) {
@@ -75,8 +108,7 @@ double AnalysisSystem::DetermineRestrictions(Entity* actor) {
   fitness->fi2_ = fi2;
   fitness->fi4_ = fi4;
 
-  return pow(((fi1 + std::abs(fi1)) / 2), 2) +
-         pow(((fi2 + std::abs(fi2)) / 2), 2) +
+  return pow(((fi1 + std::abs(fi1)) / 2), 2) + pow(((fi2 + std::abs(fi2)) / 2), 2) +
          pow(((fi4 + std::abs(fi4)) / 2), 2);
 }
 
@@ -91,4 +123,13 @@ double AnalysisSystem::DetermineFi2Diapason(double d, double n) {
 double AnalysisSystem::DetermineFi4Diapason(double n) {
   return 3 - n;
 }
+
+void AnalysisSystem::AddFitnessPlotData(int n, int value, color_t color) {
+  state_.AddFitnessPoint(n, value, color);
+}
+
+void AnalysisSystem::ClearFitnessPlot() {
+  state_.ClearFitnessGraph();
+}
+
 void AnalysisSystem::OnPostUpdate() {}

@@ -21,12 +21,16 @@ class AnalysisSystem : public ISystem {
   void OnPreUpdate() override;
   void OnUpdate() override;
   void OnPostUpdate() override;
+
+ private:
   double DetermineFi1Diapason(double t3);
   double DetermineFi2Diapason(double d, double n);
   double DetermineFi4Diapason(double n);
   double DetermineFitness(Entity* actor);
   double DetermineFunction(Entity* actor);
   double DetermineRestrictions(Entity* actor);
+  void AddFitnessPlotData(int n, int value, color_t color);
+  void ClearFitnessPlot();
 };
 
 #endif  // INCLUDE_SPRING_SYSTEMS_ANALYSIS_SYSTEM_H_

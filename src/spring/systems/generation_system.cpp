@@ -24,11 +24,11 @@ void GenerationSystem::OnUpdate() {
     std::uniform_real_distribution<double> distB(0.0, 48.0);
 
     while (static_cast<int>(state_.GetActors().size()) < n_) {
-      auto entity = GetEntityManager().CreateEntity()->
-                    Add<CharacteristicsComponent>(
-          state_.GetRangeD()[static_cast<int>(distB(gen_))], distA(gen_), config_.GetF2(), config_.GetG(),
-          config_.GetH3())->
-                    Add<FitnessComponent>(-1);;
+      int index = static_cast<int>(distB(gen_));
+      auto entity = GetEntityManager().CreateEntity()
+                        ->Add<CharacteristicsComponent>(index, state_.GetRangeD()[index], distA(gen_), config_.GetF2(),
+                                                        config_.GetG(), config_.GetH3())
+                        ->Add<FitnessComponent>(-1);
       state_.AddActor(entity);
     }
 

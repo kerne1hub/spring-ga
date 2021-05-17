@@ -39,8 +39,11 @@ void CrossoverSystem::OnUpdate() {
           isParentInSearch = true;
         } else {
           if (dist(gen_) > 0.5) {
+            auto currentIndex = state_.GetActors()[index]->Get<CharacteristicsComponent>()->d_index_;
+
             auto entity = GetEntityManager().CreateEntity()->
                           Add<CharacteristicsComponent>(
+                currentIndex,
                 state_.GetActors()[index]->Get<CharacteristicsComponent>()->d_,
                 state_.GetActors()[freeParent]->Get<CharacteristicsComponent>()->D_,
                 config_.GetF2(),
@@ -50,8 +53,11 @@ void CrossoverSystem::OnUpdate() {
 
             state_.AddDescendant(entity);
           } else {
+            auto currentIndex = state_.GetActors()[freeParent]->Get<CharacteristicsComponent>()->d_index_;
+
             auto entity = GetEntityManager().CreateEntity()->
                           Add<CharacteristicsComponent>(
+                currentIndex,
                 state_.GetActors()[freeParent]->Get<CharacteristicsComponent>()->d_,
                 state_.GetActors()[index]->Get<CharacteristicsComponent>()->D_,
                 config_.GetF2(),
