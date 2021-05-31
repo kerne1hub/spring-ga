@@ -70,7 +70,12 @@ void RenderingSystem::OnUpdate() {
     terminal_printf(68, 15, "%.0f", fitness->fi4_);
 
     terminal_setf("U+E100: %#p, raw-size=%dx%d", state_.GetFitnessGraph().data(), 100, 100);
+    terminal_setf("U+E101: %#p, raw-size=%dx%d", state_.GetResultGraph().data(), 300, 200);
     terminal_put(2, 2, 0xE100);
+    terminal_put(2, 10, 0xE101);
+    terminal_printf(40, 22, "0");
+    terminal_printf(40
+                    , 10, "%.2f", state_.GetBestFitness() * 2);
   }
 
   terminal_refresh();

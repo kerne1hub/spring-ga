@@ -29,6 +29,7 @@ void AnalysisSystem::OnUpdate() {
     int n = 0;
 
     ClearFitnessPlot();
+    ClearResultPlot();
 
     for (auto actor : actors) {
       double fitness = DetermineFitness(actor);
@@ -48,9 +49,11 @@ void AnalysisSystem::OnUpdate() {
     }
 
     n = 0;
+    state_.AddResult(best);
+    state_.AddAvgResult(avg);
 
     avg /= static_cast<int>(size);
-    worse = avg * 2;
+    worse = best * 2;
 
     for (auto actor : actors) {
       auto value = round(actor->Get<FitnessComponent>()->value_);
@@ -60,6 +63,19 @@ void AnalysisSystem::OnUpdate() {
       n++;
     }
 
+    n = 0;
+    auto results = state_.GetResults();
+    worse = results.empty()? 0.0 : (std::accumulate(results.begin(), results.end(), 0.0) / results.size()) * 2;
+
+    for (auto point : results) {
+      auto value = round(point);
+      auto y = round((value / worse) * 200);
+      y = y > 199 ? 199 : y;
+      AddResultPlotData(3 * n, static_cast<int>(y), 0xFF80FF80);
+      n++;
+    }
+
+    // border
     for (int x = 0; x < 100; x++) {
       AddFitnessPlotData(x, 0, 0xFFFFFFFF);
       AddFitnessPlotData(x, 99, 0xFFFFFFFF);
@@ -68,6 +84,16 @@ void AnalysisSystem::OnUpdate() {
     for (int y = 0; y < 100; y++) {
       AddFitnessPlotData(0, y, 0xFFFFFFFF);
       AddFitnessPlotData(99, y, 0xFFFFFFFF);
+    }
+
+    for (int x = 0; x < 300; x++) {
+      AddResultPlotData(x, 0, 0xFFFFFFFF);
+      AddResultPlotData(x, 199, 0xFFFFFFFF);
+    }
+
+    for (int y = 0; y < 200; y++) {
+      AddResultPlotData(0, y, 0xFFFFFFFF);
+      AddResultPlotData(299, y, 0xFFFFFFFF);
     }
 
     state_.SetAverageFitness(avg);
@@ -128,8 +154,16 @@ void AnalysisSystem::AddFitnessPlotData(int n, int value, color_t color) {
   state_.AddFitnessPoint(n, value, color);
 }
 
+void AnalysisSystem::AddResultPlotData(int n, int value, color_t color) {
+  state_.AddResultPoint(n, value, color);
+}
+
 void AnalysisSystem::ClearFitnessPlot() {
   state_.ClearFitnessGraph();
+}
+
+void AnalysisSystem::ClearResultPlot() {
+  state_.ClearResultGraph();
 }
 
 void AnalysisSystem::OnPostUpdate() {}

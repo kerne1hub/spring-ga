@@ -21,6 +21,10 @@ class State {
   std::vector<Entity*> descendants_;
 
   std::vector<color_t> fitnessGraph_;
+  std::vector<color_t> resultGraph_;
+
+  std::vector<double> results_;
+  std::vector<double> avgResults_;
 
   int generation_ = 0;
   int generationLimit_{};
@@ -160,6 +164,11 @@ class State {
     fitnessGraph_.resize(10000, 0);
   }
 
+  void ClearResultGraph() {
+    resultGraph_.clear();
+    resultGraph_.resize(60000, 0);
+  }
+
   void AddFitnessPoint(int n, int value, color_t color) {
     int offset = abs(value - 99) * 100 + n;
 
@@ -168,8 +177,36 @@ class State {
     }
   }
 
+  void AddResultPoint(int n, int value, color_t color) {
+    int offset = abs(value - 199) * 300 + n;
+
+    if (offset < 60000 && offset >= 0) {
+      resultGraph_[offset] = color;
+    }
+  }
+
+  void AddResult(double value) {
+    results_.emplace_back(value);
+  }
+
+  void AddAvgResult(double value) {
+    avgResults_.emplace_back(value);
+  }
+
   const std::vector<color_t>& GetFitnessGraph() const {
     return fitnessGraph_;
+  }
+
+  const std::vector<color_t>& GetResultGraph() const {
+    return resultGraph_;
+  }
+
+  const std::vector<double>& GetResults() const {
+    return results_;
+  }
+
+  const std::vector<double>& GetAvgResults() const {
+    return avgResults_;
   }
 };
 

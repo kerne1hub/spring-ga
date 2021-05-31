@@ -31,6 +31,8 @@ class AnalysisSystem : public ISystem {
   double DetermineRestrictions(Entity* actor);
   void AddFitnessPlotData(int n, int value, color_t color);
   void ClearFitnessPlot();
+  void AddResultPlotData(int n, int value, color_t color);
+  void ClearResultPlot();
 };
 
 #endif  // INCLUDE_SPRING_SYSTEMS_ANALYSIS_SYSTEM_H_
